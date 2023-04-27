@@ -416,3 +416,5 @@ import postman collection via link and run APIs
 ```
 https://api.postman.com/collections/22576705-34cbd944-2e40-4355-bba5-5e7e6a640888?access_key=PMAT-01GZ0GCW4Q77HW6XFJET4K7529
 ```
+For further reference or adding functionality you can read this algolia documentation:
+https://www.algolia.com/doc
