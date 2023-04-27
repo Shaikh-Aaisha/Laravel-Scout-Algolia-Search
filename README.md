@@ -407,7 +407,8 @@ public function searchapi(Request $request)
             }
         }
     }
-    ```
+    
+```
 #### Run APIs in Postman
 
 import postman collection via link and run APIs
