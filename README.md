@@ -28,16 +28,16 @@ You are free to change the configuration file as needed in .env file:
 SCOUT_QUEUE=true
 
 ```
-Ok, now we have to install package for "algolia", so let's run bellow command:
+Now we have to install package for "algolia", so let's run bellow command:
 
 ```bash
 $ composer require algolia/algoliasearch-client-php
 ```
 
 #### Package Configration 
-Ok, now we have to set id and secret of algolia, so first you have to create new account in algolia.com. So if you haven't account on algolia.com site then click here and create new account https://www.algolia.com
+Now we have to set id and secret of algolia, so first you have to create new account in algolia.com. So if you haven't account on algolia.com site then click here and create new account https://www.algolia.com
 
-Ok, after login we have to get application id and secret id
+After login we have to get application id and secret id
 Now open your .env file and paste id and secret like as bellow:
 
 ```php
@@ -198,6 +198,7 @@ class ItemSearchController extends Controller
 
 In Last step, let's create item-search.blade.php(resources/views/item-search.blade.php) for layout and we will write design code here and put following code:
 resources/views/item-search.blade.php
+
 ```php
 <!DOCTYPE html>
 <html>
@@ -301,7 +302,7 @@ resources/views/item-search.blade.php
 </body>
 </html>
 ```
-Ok, now we are ready to run this example so quick run by following command:
+Now we are ready to run this example so quick run by following command:
 
 ```bash
     php artisan serve
@@ -316,7 +317,97 @@ Add this routes/api.php
 Route::post('searchapi',[ItemSearchController::class,'searchapi']);
 Route::post('createapi',[ItemSearchController::class,'createapi']);
 ``` 
+Add this functions to your controller
 
+```php
+public function searchapi(Request $request)
+    {
+            try 
+            {
+
+                if ($request->has('titlesearch')) {
+                    $items = Item::search($request->titlesearch)->get();
+                    return response()->json(
+                        [
+                            'status'       =>  "success",
+                            'message'      =>  "Record Found",
+                            'data' => $items
+                        ],
+                        200
+                    );
+                } else {
+                    $items = Item::all();
+                    return response()->json(
+                        [
+                            'status'       =>  "success",
+                            'message'      =>  "All Records",
+                            'data' => $items
+                        ],
+                        200
+                    );
+                }
+            }
+            catch (\Throwable $e) {
+                return response()->json([
+                    'status'  => 'failed',
+                    'message' => trans('validation.custom.invalid.request'),
+                    'error'   => $e->getMessage()
+                ], 500);
+            }
+        // }
+    }
+
+    #API Function For Create/Insert a Record
+
+    public function createapi(Request $request)
+    {
+        $data = $request->only('title');
+        $validator = Validator::make($data, [
+            'title' => 'required'
+
+        ]);
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                    'status'    => 'failed',
+                    'errors'    =>  $validator->errors(),
+                    'message'   =>  trans('validation.custom.input.invalid'),
+                ],
+                400
+            );
+        } else {
+            try {
+
+                $items = Item::create($request->all());
+                if ($items) {
+                    return response()->json(
+                        [
+                            'status'       =>  "success",
+                            'message'      =>  "Record Created  Successfuly!",
+                            'data' => $items
+                        ],
+                        200
+                    );
+                } else {
+                    return response()->json(
+                        [
+                            'status'       =>  "success",
+                            'message'      =>  "Unable To Create Record",
+
+                        ],
+                        400
+                    );
+                }
+            } catch (\Throwable $e) {
+                return response()->json([
+                    'status'  => 'failed',
+                    'message' => trans('validation.custom.invalid.request'),
+                    'error'   => $e->getMessage()
+                ], 500);
+            }
+        }
+    }
+    ```
 #### Run APIs in Postman
 
 import postman collection via link and run APIs
